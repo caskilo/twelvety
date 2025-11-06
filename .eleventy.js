@@ -2,7 +2,15 @@ const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 
 module.exports = function(eleventyConfig) {
   // GitHub Pages configuration
-  const pathPrefix = process.env.ELEVENTY_PATH_PREFIX || "";
+  let pathPrefix = process.env.ELEVENTY_PATH_PREFIX;
+
+  if (!pathPrefix) {
+    const repository = process.env.GITHUB_REPOSITORY || "";
+    const repoName = repository.split("/")[1] || "";
+    const isProjectPage = repoName && !repoName.endsWith(".github.io");
+
+    pathPrefix = isProjectPage ? `/${repoName}` : "";
+  }
   
   // Plugins
   eleventyConfig.addPlugin(syntaxHighlight);
