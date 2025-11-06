@@ -1,0 +1,29 @@
+{
+  "name": "eleventy-site-template",
+  "version": "1.0.0",
+  "description": "Content-agnostic Eleventy static site template with search and filtering",
+  "scripts": {
+    "dev": "eleventy --serve",
+    "build": "eleventy",
+    "build:gh": "cross-env ELEVENTY_PATH_PREFIX=/eleventy-template eleventy",
+    "clean": "rm -rf _site"
+  },
+  "keywords": [
+    "eleventy",
+    "static-site",
+    "template",
+    "search",
+    "knowledge-base"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@11ty/eleventy": "^2.0.1",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
+    "cross-env": "^7.0.3"
+  },
+  "dependencies": {
+    "lunr": "^2.3.9",
+    "markdown-it": "^14.0.0"
+  }
+}

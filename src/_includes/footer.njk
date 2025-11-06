@@ -1,0 +1,46 @@
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>{{ site.organization }}</h3>
+                <p>{{ site.description }}</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Site</h3>
+                <ul>
+                    <li><a href="{{ '/about/' | url }}">About</a></li>
+                    <li><a href="{{ '/contact/' | url }}">Contact</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul>
+                    {% for section in site.sections %}
+                    <li><a href="{{ ('/' ~ section.id ~ '/') | url }}">{{ section.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; <span id="site-year"></span> {{ site.organization }}. All rights reserved.</p>
+            <p>Last updated: <span id="last-updated"></span></p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    const now = new Date();
+    const footerYear = document.getElementById('site-year');
+    const footerUpdated = document.getElementById('last-updated');
+
+    if (footerYear) {
+        footerYear.textContent = now.getFullYear();
+    }
+
+    if (footerUpdated) {
+        footerUpdated.textContent = now.toLocaleDateString('en-GB');
+    }
+</script>

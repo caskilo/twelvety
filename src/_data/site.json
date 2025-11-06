@@ -1,0 +1,25 @@
+{
+  "name": "Your Site",
+  "description": "Your site description - appears in meta tags and homepage",
+  "organization": "Your Organization",
+  "url": "https://yoursite.com",
+  "sections": [
+    {
+      "id": "example",
+      "title": "Example Section",
+      "description": "This is an example content section",
+      "icon": "📚"
+    }
+  ],
+  "audienceTypes": [
+    "General",
+    "Beginner",
+    "Advanced",
+    "Professional"
+  ],
+  "evidenceLevels": [
+    { "id": "high", "label": "High Quality", "badge": "strong" },
+    { "id": "medium", "label": "Medium Quality", "badge": "good" },
+    { "id": "low", "label": "Emerging", "badge": "emerging" }
+  ]
+}

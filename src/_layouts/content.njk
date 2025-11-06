@@ -1,0 +1,67 @@
+---
+layout: base.njk
+---
+
+<article class="content-article">
+    <header class="content-header">
+        <div class="back-link" id="section-back-link" hidden>
+            <a href="#" id="section-back-button">← Back to section</a>
+        </div>
+        <h1>{{ title }}</h1>
+        {% include "metadata.njk" %}
+    </header>
+    
+    <div class="content-body">
+        {{ content | safe }}
+    </div>
+    
+    <aside class="content-sidebar">
+        {% if tags and tags.length > 0 %}
+        <section class="sidebar-section">
+            <h3>Tags</h3>
+            <div class="tag-list">
+                {{ tags | tagList | safe }}
+            </div>
+        </section>
+        {% endif %}
+        
+        {% if audience and audience.length > 0 %}
+        <section class="sidebar-section">
+            <h3>Relevant For</h3>
+            <ul class="audience-list">
+                {% for aud in audience %}
+                <li>{{ aud }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+        
+        {% if source %}
+        <section class="sidebar-section">
+            <h3>Source</h3>
+            <p>{{ source }}</p>
+            {% if sourceUrl %}
+            <a href="{{ sourceUrl }}" target="_blank" rel="noopener">View Source →</a>
+            {% endif %}
+        </section>
+        {% endif %}
+        
+        <section class="sidebar-section metadata-section">
+            <h3>Document Info</h3>
+            <dl>
+                {% if dateAdded %}
+                <dt>Added</dt>
+                <dd>{{ dateAdded | readableDate }}</dd>
+                {% endif %}
+                {% if lastReviewed %}
+                <dt>Last Reviewed</dt>
+                <dd>{{ lastReviewed | readableDate }}</dd>
+                {% endif %}
+                {% if reviewDue %}
+                <dt>Next Review</dt>
+                <dd>{{ reviewDue | readableDate }}</dd>
+                {% endif %}
+            </dl>
+        </section>
+    </aside>
+</article>

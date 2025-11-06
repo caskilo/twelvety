@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }} | {% endif %}{{ site.name }}</title>
+    <meta name="description" content="{% if description %}{{ description }}{% else %}{{ site.description }}{% endif %}">
+    <link rel="icon" href="{{ '/assets/favicon.svg' | url }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ '/css/main.css' | url }}">
+    <link rel="stylesheet" href="{{ '/css/search.css' | url }}">
+</head>
+<body data-site-prefix="{{ '/' | url }}" data-search-index="{{ '/search-index.json' | url }}">
+    {% include "header.njk" %}
+    {% include "nav.njk" %}
+    
+    <main class="main-content">
+        {{ content | safe }}
+    </main>
+    
+    {% include "footer.njk" %}
+    
+    <script src="{{ '/js/theme.js' | url }}"></script>
+    <script src="{{ '/js/vendor/lunr.js' | url }}"></script>
+    <script src="{{ '/js/search.js' | url }}"></script>
+    <script src="{{ '/js/filters.js' | url }}"></script>
+</body>
+</html>

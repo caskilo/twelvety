@@ -1,0 +1,24 @@
+<div class="content-metadata">
+    {% if category %}
+    <span class="metadata-item metadata-category">
+        <strong>Category:</strong> {{ category | capitalize }}
+    </span>
+    {% endif %}
+    
+    {% if evidenceLevel %}
+    <span class="metadata-item metadata-evidence badge-{{ evidenceLevel }}">
+        <strong>Evidence:</strong> 
+        {% for level in site.evidenceLevels %}
+            {% if level.id == evidenceLevel %}
+                {{ level.label }}
+            {% endif %}
+        {% endfor %}
+    </span>
+    {% endif %}
+    
+    {% if status %}
+    <span class="metadata-item metadata-status status-{{ status }}">
+        <strong>Status:</strong> {{ status | replace("-", " ") | capitalize }}
+    </span>
+    {% endif %}
+</div>

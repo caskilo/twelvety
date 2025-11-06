@@ -1,0 +1,62 @@
+---
+layout: base.njk
+---
+
+{% set sectionData = site.sections | findSection(sectionId) %}
+{% set icon = sectionData and sectionData.icon or icon %}
+{% set heading = sectionData and sectionData.title or title %}
+{% set blurb = sectionData and sectionData.description or description %}
+
+<section class="section-page" data-section-id="{{ sectionId }}">
+    <header class="section-header">
+        <h1>{% if icon %}<span class="section-icon">{{ icon }}</span>{% endif %} {{ heading }}</h1>
+        {% if blurb %}
+        <p class="section-description">{{ blurb }}</p>
+        {% endif %}
+    </header>
+
+    {% set sectionKey = sectionId | sectionCollectionKey %}
+    {% set collectionEntries = collections[sectionKey] or [] %}
+    {% set filteredEntries = collectionEntries | filterByCategory(sectionId) %}
+    {% set entries = filteredEntries %}
+
+    {% if entries | length == 0 %}
+        {% set entries = collectionEntries %}
+    {% endif %}
+
+    {% if entries | length > 0 %}
+    <div class="section-entry-list">
+        {% for item in entries %}
+        <article class="section-entry">
+            <div class="section-entry-content">
+                <h2 class="section-entry-title">
+                    <a href="{{ item.url | url }}" class="section-entry-link" data-section="{{ sectionId }}" data-section-title="{{ heading }}">{{ item.data.title }}</a>
+                </h2>
+                {% set rawSummary = item.templateContent | striptags | trim %}
+                {% if rawSummary %}
+                <p class="section-entry-summary">{{ rawSummary | truncate(280, true, '…') }}</p>
+                {% endif %}
+            </div>
+            <div class="section-entry-preview">
+                <div class="section-entry-meta">
+                    {% if item.data.evidenceLevel %}
+                    <span class="badge badge-{{ item.data.evidenceLevel }}">{{ item.data.evidenceLevel | replace("-", " ") | capitalize }}</span>
+                    {% endif %}
+                    {% if item.data.audience %}
+                    <div class="meta-item"><strong>For:</strong> {{ item.data.audience | join(", ") }}</div>
+                    {% endif %}
+                    {% if item.data.lastReviewed %}
+                    <div class="meta-item"><strong>Reviewed:</strong> {{ item.data.lastReviewed | readableDate }}</div>
+                    {% endif %}
+                </div>
+                <a class="section-entry-readmore btn-primary section-entry-link" href="{{ item.url | url }}" data-section="{{ sectionId }}" data-section-title="{{ heading }}">View Page →</a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="section-empty">
+        <p>No content has been published in this section yet. Check back soon or contribute new material.</p>
+    </div>
+    {% endif %}
+</section>

@@ -1,0 +1,45 @@
+<header class="site-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-branding">
+                <a href="{{ '/' | url }}" class="site-logo-link" aria-label="{{ site.organization }} home">
+                    <img src="{{ '/assets/logo.svg' | url }}" alt="{{ site.organization }} logo" class="site-logo">
+                </a>
+                <h1 class="site-title">
+                    <a href="{{ '/' | url }}">{{ site.name }}</a>
+                </h1>
+            </div>
+            
+            <div class="header-search" id="search">
+                <div class="search-controls">
+                    <form class="search-form" role="search">
+                        <input 
+                            type="search" 
+                            id="search-input" 
+                            placeholder="Search..." 
+                            aria-label="Search"
+                            autocomplete="off"
+                        >
+                        <button type="submit" aria-label="Search">
+                            <span>🔍</span>
+                        </button>
+                    </form>
+                    <button class="filter-toggle" id="filter-toggle" aria-label="Toggle filters">
+                        🎛️
+                    </button>
+                </div>
+                <div id="search-results" class="search-results" hidden></div>
+            </div>
+            
+            <div class="header-actions">
+                <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="site-nav-panel" aria-label="Expand navigation">
+                    <span class="nav-toggle-label">Show Menu</span>
+                    <span class="nav-toggle-icon" aria-hidden="true"></span>
+                </button>
+                <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode">
+                    🌙
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
