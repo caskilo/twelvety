@@ -14,15 +14,17 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "node_modules/lunr/lunr.js": "js/vendor/lunr.js" });
 
   // ============================================
-  // COLLECTIONS - Add one for each content section
+  // COLLECTIONS - Auto-generated from site.json sections
   // ============================================
-  // Example:
-  // eleventyConfig.addCollection("sectionName", function(collectionApi) {
-  //   return collectionApi.getFilteredByGlob("content/section-name/**/*.md");
-  // });
   
-  eleventyConfig.addCollection("example", function(collectionApi) {
-    return collectionApi.getFilteredByGlob("content/example/**/*.md");
+  // Load site data to auto-create collections
+  const siteData = require('./src/_data/site.json');
+  
+  siteData.sections.forEach(section => {
+    const collectionKey = section.id.replace(/-/g, ''); // Remove hyphens for collection key
+    eleventyConfig.addCollection(collectionKey, function(collectionApi) {
+      return collectionApi.getFilteredByGlob(`content/${section.id}/**/*.md`);
+    });
   });
 
   // ============================================
@@ -79,11 +81,9 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addCollection("searchIndex", function(collectionApi) {
     const allContent = [];
     
-    // Add your section names here to include them in search
-    const sections = ['example'];
-    
-    sections.forEach(key => {
-      const items = collectionApi.getFilteredByGlob(`content/${key}/**/*.md`);
+    // Automatically include all sections from site.json in search
+    siteData.sections.forEach(section => {
+      const items = collectionApi.getFilteredByGlob(`content/${section.id}/**/*.md`);
       items.forEach(item => {
         allContent.push({
           title: item.data.title,
@@ -92,7 +92,7 @@ module.exports = function(eleventyConfig) {
           tags: item.data.tags || [],
           category: item.data.category || '',
           audience: item.data.audience || [],
-          section: key
+          section: section.id
         });
       });
     });
@@ -103,6 +103,11 @@ module.exports = function(eleventyConfig) {
   // ============================================
   // CONFIGURATION
   // ============================================
+  
+  // Enable incremental builds in production
+  if (process.env.ELEVENTY_ENV === 'production') {
+    eleventyConfig.setIncrementalBuild(true);
+  }
   
   return {
     dir: {

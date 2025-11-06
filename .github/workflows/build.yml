@@ -1,0 +1,163 @@
+name: Build Site
+
+on:
+  workflow_dispatch:
+    inputs:
+      buildId:
+        description: 'Unique build identifier'
+        required: true
+        type: string
+      projectId:
+        description: 'Project identifier'
+        required: true
+        type: string
+      incremental:
+        description: 'Use incremental build'
+        required: false
+        type: boolean
+        default: true
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Detect build type
+        id: build-type
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.incremental }}" == "true" ]]; then
+            echo "incremental=true" >> $GITHUB_OUTPUT
+            echo "🔄 Using incremental build"
+          else
+            echo "incremental=false" >> $GITHUB_OUTPUT
+            echo "🏗️  Using full build"
+          fi
+
+      - name: Build site (Incremental)
+        if: steps.build-type.outputs.incremental == 'true'
+        run: npm run build -- --incremental
+        env:
+          ELEVENTY_ENV: production
+
+      - name: Build site (Full)
+        if: steps.build-type.outputs.incremental == 'false'
+        run: npm run build
+        env:
+          ELEVENTY_ENV: production
+
+      - name: Generate search index
+        run: npm run search-index
+
+      - name: Create build metadata
+        run: |
+          cat > _site/.build-metadata.json << EOF
+          {
+            "buildId": "${{ inputs.buildId || github.sha }}",
+            "projectId": "${{ inputs.projectId || 'main' }}",
+            "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
+            "gitCommit": "${{ github.sha }}",
+            "gitBranch": "${{ github.ref_name }}",
+            "workflow": "${{ github.workflow }}",
+            "runNumber": ${{ github.run_number }},
+            "nodeVersion": "$(node --version)",
+            "npmVersion": "$(npm --version)",
+            "incremental": ${{ steps.build-type.outputs.incremental }}
+          }
+          EOF
+          
+      - name: Display build info
+        run: |
+          echo "📦 Build completed"
+          echo "   Build ID: ${{ inputs.buildId || github.sha }}"
+          echo "   Project: ${{ inputs.projectId || 'main' }}"
+          echo "   Incremental: ${{ steps.build-type.outputs.incremental }}"
+          echo "   Files generated: $(find _site -type f | wc -l)"
+          echo "   Total size: $(du -sh _site | cut -f1)"
+
+      - name: Upload to S3 (Archive)
+        if: env.AWS_ACCESS_KEY_ID != ''
+        run: |
+          aws s3 sync _site s3://${{ secrets.AWS_BUCKET_NAME }}/archives/${{ inputs.projectId || 'main' }}/${{ inputs.buildId || github.sha }}/ \
+            --delete \
+            --cache-control "public, max-age=31536000" \
+            --metadata "buildId=${{ inputs.buildId || github.sha }},projectId=${{ inputs.projectId || 'main' }},timestamp=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+        continue-on-error: true
+
+      - name: Upload artifacts for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    permissions:
+      pages: write
+      id-token: write
+      
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Report deployment
+        run: |
+          echo "✅ Deployment complete"
+          echo "   URL: ${{ steps.deployment.outputs.page_url }}"
+
+  notify:
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Notify build completion
+        if: env.SERVICE_TOKEN != ''
+        run: |
+          STATUS="${{ needs.build.result }}"
+          if [[ "${{ needs.deploy.result }}" == "success" ]]; then
+            STATUS="completed"
+          elif [[ "${{ needs.build.result }}" == "failure" ]]; then
+            STATUS="failed"
+          fi
+          
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.SERVICE_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"buildId\":\"${{ inputs.buildId }}\",\"status\":\"${STATUS}\",\"url\":\"${{ needs.deploy.outputs.page_url }}\"}" \
+            ${{ secrets.SERVICE_URL }}/api/build/${{ inputs.buildId }}/complete
+        env:
+          SERVICE_TOKEN: ${{ secrets.SERVICE_TOKEN }}
+          SERVICE_URL: ${{ secrets.SERVICE_URL }}
+        continue-on-error: true

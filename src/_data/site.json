@@ -1,25 +1,110 @@
 {
-  "name": "Your Site",
-  "description": "Your site description - appears in meta tags and homepage",
-  "organization": "Your Organization",
-  "url": "https://yoursite.com",
+  "name": "Twelvety Documentation",
+  "description": "API-driven website generation service powered by Eleventy",
+  "organization": "Twelvety",
+  "url": "https://twelvety.dev",
   "sections": [
     {
+      "id": "getting-started",
+      "title": "Getting Started",
+      "description": "Quick start guides and introduction",
+      "icon": "🚀"
+    },
+    {
+      "id": "guides",
+      "title": "Guides",
+      "description": "Detailed tutorials and how-to guides",
+      "icon": "📖"
+    },
+    {
+      "id": "api-reference",
+      "title": "API Reference",
+      "description": "Complete API documentation",
+      "icon": "⚙️"
+    },
+    {
+      "id": "faq",
+      "title": "FAQ",
+      "description": "Frequently asked questions",
+      "icon": "❓"
+    },
+    {
       "id": "example",
-      "title": "Example Section",
-      "description": "This is an example content section",
+      "title": "Examples",
+      "description": "Example content and templates",
       "icon": "📚"
     }
   ],
   "audienceTypes": [
-    "General",
-    "Beginner",
-    "Advanced",
-    "Professional"
+    "developers",
+    "designers",
+    "managers",
+    "students"
   ],
   "evidenceLevels": [
     { "id": "high", "label": "High Quality", "badge": "strong" },
     { "id": "medium", "label": "Medium Quality", "badge": "good" },
     { "id": "low", "label": "Emerging", "badge": "emerging" }
-  ]
+  ],
+  "frontmatterSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["title", "category", "layout"],
+    "additionalProperties": true,
+    "properties": {
+      "title": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200,
+        "description": "Page title (displayed in navigation and meta tags)"
+      },
+      "category": {
+        "type": "string",
+        "enum": ["getting-started", "guides", "api-reference", "faq", "example"],
+        "description": "Content section (must match a section id)"
+      },
+      "layout": {
+        "type": "string",
+        "const": "content.njk",
+        "description": "Template layout to use"
+      },
+      "tags": {
+        "type": "array",
+        "items": { "type": "string" },
+        "maxItems": 10,
+        "uniqueItems": true,
+        "description": "Search keywords and topics"
+      },
+      "audience": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": ["developers", "designers", "managers", "students"]
+        },
+        "description": "Target audience for this content"
+      },
+      "dateAdded": {
+        "type": "string",
+        "format": "date",
+        "description": "Creation date (YYYY-MM-DD)"
+      },
+      "lastReviewed": {
+        "type": "string",
+        "format": "date",
+        "description": "Last review date (YYYY-MM-DD)"
+      },
+      "webglEmbed": {
+        "type": "string",
+        "format": "uri",
+        "description": "URL to WebGL content for embedding"
+      },
+      "webglHeight": {
+        "type": "integer",
+        "minimum": 300,
+        "maximum": 1200,
+        "default": 600,
+        "description": "Height of WebGL iframe in pixels"
+      }
+    }
+  }
 }

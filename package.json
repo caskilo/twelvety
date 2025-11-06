@@ -1,21 +1,24 @@
 {
-  "name": "eleventy-site-template",
+  "name": "twelvety-website-service",
   "version": "1.0.0",
-  "description": "Content-agnostic Eleventy static site template with search and filtering",
+  "description": "API-driven website-as-a-service powered by Eleventy with validation and build orchestration",
   "scripts": {
     "dev": "eleventy --serve",
     "build": "eleventy",
-    "build:gh": "cross-env ELEVENTY_PATH_PREFIX=/eleventy-template eleventy",
-    "clean": "rm -rf _site"
+    "build:gh": "cross-env ELEVENTY_PATH_PREFIX=/twelvety eleventy",
+    "clean": "node -e \"require('fs').rmSync('_site', {recursive:true, force:true})\"",
+    "search-index": "node scripts/generate-search-index.js",
+    "validate-schema": "node scripts/validate-schema.js",
+    "test": "node scripts/test-validation.js"
   },
   "keywords": [
     "eleventy",
     "static-site",
-    "template",
-    "search",
-    "knowledge-base"
+    "website-as-a-service",
+    "markdown-validation",
+    "api-first"
   ],
-  "author": "Your Name",
+  "author": "Twelvety Team",
   "license": "MIT",
   "devDependencies": {
     "@11ty/eleventy": "^2.0.1",
@@ -23,7 +26,14 @@
     "cross-env": "^7.0.3"
   },
   "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "aws-sdk": "^2.1500.0",
+    "glob": "^10.3.10",
+    "gray-matter": "^4.0.3",
     "lunr": "^2.3.9",
-    "markdown-it": "^14.0.0"
+    "markdown-it": "^14.0.0",
+    "uuid": "^9.0.1"
   }
 }

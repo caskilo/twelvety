@@ -1,0 +1,40 @@
+[build]
+  command = "npm run build"
+  publish = "_site"
+  functions = "functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+  ELEVENTY_ENV = "production"
+
+[[redirects]]
+  from = "/api/validate"
+  to = "/.netlify/functions/validate"
+  status = 200
+
+[[redirects]]
+  from = "/api/build"
+  to = "/.netlify/functions/build"
+  status = 200
+
+[[redirects]]
+  from = "/api/build/:buildId/status"
+  to = "/.netlify/functions/build-status"
+  status = 200
+
+[functions]
+  node_bundler = "esbuild"
+  
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
