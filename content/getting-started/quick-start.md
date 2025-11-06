@@ -4,8 +4,8 @@ title: Quick Start Guide
 category: getting-started
 tags: [introduction, setup, quickstart]
 audience: [developers]
-dateAdded: 2024-11-06
-lastReviewed: 2024-11-06
+dateAdded: 2025-11-06
+lastReviewed: 2025-11-06
 ---
 
 # Quick Start Guide
@@ -31,7 +31,7 @@ Twelvety transforms markdown content into beautiful, fast, static websites throu
 
 Write your content in markdown with YAML frontmatter:
 
-\`\`\`markdown
+```md
 ---
 layout: content.njk
 title: My First Page
@@ -44,26 +44,26 @@ dateAdded: 2024-11-06
 # My First Page
 
 Your content goes here!
-\`\`\`
+```
 
 ### 2. Validate
 
 Use the validation API to check your content:
 
-\`\`\`bash
+```bash
 curl -X POST https://api.twelvety.dev/validate \\
   -H "Content-Type: application/json" \\
   -d '{
     "markdown": "---\\ntitle: Test\\n---\\n# Content",
     "schemaUrl": "https://api.twelvety.dev/schema.json"
   }'
-\`\`\`
+```
 
 ### 3. Build
 
 Trigger a build with the validated content:
 
-\`\`\`bash
+```bash
 curl -X POST https://api.twelvety.dev/build \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -74,7 +74,7 @@ curl -X POST https://api.twelvety.dev/build \\
       "title": "My Project"
     }
   }'
-\`\`\`
+```
 
 ### 4. Deploy
 

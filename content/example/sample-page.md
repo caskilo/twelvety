@@ -4,8 +4,8 @@ title: "Sample Page"
 category: "example"
 tags: ["sample", "demo", "getting-started"]
 audience: ["developers"]
-dateAdded: "2024-11-06"
-lastReviewed: "2024-11-06"
+dateAdded: "2025-11-06"
+lastReviewed: "2025-11-06"
 ---
 
 # Sample Page
