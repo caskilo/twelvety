@@ -6,6 +6,35 @@
   const rawPrefix = bodyEl?.dataset.sitePrefix || '';
   const searchIndexUrl = bodyEl?.dataset.searchIndex || '/search-index.json';
   const sitePrefix = rawPrefix.replace(/\/$/, '');
+  let lunrLoaderPromise = null;
+
+  function loadLunr() {
+    if (typeof lunr !== 'undefined') {
+      return Promise.resolve(lunr);
+    }
+
+    if (typeof document === 'undefined') {
+      return Promise.resolve(undefined);
+    }
+
+    if (lunrLoaderPromise) {
+      return lunrLoaderPromise;
+    }
+
+    lunrLoaderPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js';
+      script.async = true;
+      script.onload = () => resolve(window.lunr);
+      script.onerror = (err) => reject(err);
+      document.head.appendChild(script);
+    });
+
+    return lunrLoaderPromise.catch(err => {
+      lunrLoaderPromise = null;
+      throw err;
+    });
+  }
   
   // Initialize search when DOM is ready
   if (document.readyState === 'loading') {
@@ -20,6 +49,18 @@
     
     if (!searchInput || !searchResults) return;
     
+    try {
+      await loadLunr();
+    } catch (err) {
+      console.error('Failed to load Lunr library:', err);
+      return;
+    }
+
+    if (typeof lunr === 'undefined') {
+      console.error('Lunr library is not available. Search disabled.');
+      return;
+    }
+
     // Load search index
     try {
       const response = await fetch(searchIndexUrl);
