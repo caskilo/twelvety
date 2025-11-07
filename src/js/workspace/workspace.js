@@ -463,10 +463,6 @@ Start writing your content here...
         } else if (tab === 'preview') {
             editorPanel.classList.remove('active');
             previewPanel.classList.add('active');
-        } else if (tab === 'split') {
-            // TODO: Implement split view
-            editorPanel.classList.add('active');
-            previewPanel.classList.add('active');
         }
     }
 

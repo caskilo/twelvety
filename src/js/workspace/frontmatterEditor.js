@@ -23,11 +23,9 @@ export class FrontmatterEditor {
     render() {
         const editorHtml = `
             <div id="frontmatter-editor" class="frontmatter-editor ${this.collapsed ? 'collapsed' : ''}">
-                <div class="fm-header">
+                <div class="fm-header" role="button" tabindex="0" aria-expanded="${!this.collapsed}">
                     <h3>Frontmatter</h3>
-                    <button type="button" class="fm-toggle" aria-label="Toggle frontmatter editor">
-                        <span class="icon">${this.collapsed ? '▶' : '▼'}</span>
-                    </button>
+                    <span class="icon" aria-hidden="true">${this.collapsed ? '▶' : '▼'}</span>
                 </div>
                 <div class="fm-body" ${this.collapsed ? 'hidden' : ''}>
                     <form id="fm-form" class="fm-form">
@@ -230,9 +228,16 @@ export class FrontmatterEditor {
 
     setupEventListeners() {
         // Toggle collapse
-        const toggle = document.querySelector('.fm-toggle');
-        if (toggle) {
-            toggle.addEventListener('click', () => this.toggleCollapse());
+        const header = document.querySelector('.fm-header');
+        if (header) {
+            const toggle = () => this.toggleCollapse();
+            header.addEventListener('click', toggle);
+            header.addEventListener('keydown', (event) => {
+                if (event.key === ' ' || event.key === 'Enter') {
+                    event.preventDefault();
+                    toggle();
+                }
+            });
         }
 
         // Optional fields toggle
@@ -360,11 +365,17 @@ export class FrontmatterEditor {
         this.collapsed = !this.collapsed;
         const editor = document.getElementById('frontmatter-editor');
         const body = editor.querySelector('.fm-body');
-        const icon = editor.querySelector('.fm-toggle .icon');
+        const header = editor.querySelector('.fm-header');
+        const icon = header ? header.querySelector('.icon') : null;
 
         editor.classList.toggle('collapsed', this.collapsed);
         body.hidden = this.collapsed;
-        icon.textContent = this.collapsed ? '▶' : '▼';
+        if (icon) {
+            icon.textContent = this.collapsed ? '▶' : '▼';
+        }
+        if (header) {
+            header.setAttribute('aria-expanded', String(!this.collapsed));
+        }
     }
 
     toggleOptionalFields() {
