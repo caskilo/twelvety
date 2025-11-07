@@ -14,7 +14,9 @@ export class Validator {
     async init() {
         // Load schema from site.json
         try {
-            const response = await fetch('/site.json');
+            const sitePrefixAttr = document.body?.dataset?.sitePrefix || '/';
+            const normalizedPrefix = sitePrefixAttr.endsWith('/') ? sitePrefixAttr : `${sitePrefixAttr}/`;
+            const response = await fetch(`${normalizedPrefix.replace(/\/\/+$/, '/') }site.json`);
             const siteData = await response.json();
             this.schema = siteData.frontmatterSchema;
         } catch (err) {
